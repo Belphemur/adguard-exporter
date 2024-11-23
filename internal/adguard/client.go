@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/belphemur/adguard-exporter/internal/adguard/generated"
 	"io"
 	"log"
 	"net/http"
@@ -64,6 +65,12 @@ func (c *Client) do(ctx context.Context, method string, path string, out any) er
 func (c *Client) GetStats(ctx context.Context) (*Stats, error) {
 	out := &Stats{}
 	err := c.do(ctx, http.MethodGet, "/control/stats", out)
+	return out, err
+}
+
+func (c *Client) GetClients(ctx context.Context) (*generated.Clients, error) {
+	out := &generated.Clients{}
+	err := c.do(ctx, http.MethodGet, "/clients", out)
 	return out, err
 }
 
