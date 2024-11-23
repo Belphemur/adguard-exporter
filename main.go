@@ -39,7 +39,7 @@ func main() {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	http := http.NewHttp(global.Server.Debug)
+	http := http.NewHttp(global.Server.Debug, global.Server.Port)
 	log.Printf("Running server version %s (%s), built at %s\n", version, commit, date)
 	go http.Serve()
 	go worker.Work(ctx, global.Server.Interval, clients)

@@ -5,16 +5,18 @@ import (
 	"log"
 	"net/http"
 	_ "net/http/pprof"
+	"strconv"
 
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 )
 
 type Http struct {
-	e *echo.Echo
+	e    *echo.Echo
+	port uint16
 }
 
-func NewHttp(debug bool) *Http {
+func NewHttp(debug bool, port uint16) *Http {
 	e := echo.New()
 	e.HideBanner = true
 
@@ -24,13 +26,14 @@ func NewHttp(debug bool) *Http {
 	}
 
 	return &Http{
-		e: e,
+		e,
+		port,
 	}
 }
 
 func (h *Http) Serve() error {
-	log.Println("Starting http server on port 9618")
-	return h.e.Start(":9618")
+	log.Printf("Starting http server on port %d\n", h.port)
+	return h.e.Start(":" + strconv.Itoa(int(h.port)))
 }
 
 func (h *Http) Stop(ctx context.Context) error {
