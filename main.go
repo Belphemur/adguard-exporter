@@ -2,15 +2,22 @@ package main
 
 import (
 	"context"
+	"github.com/labstack/gommon/log"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/henrywhitaker3/adguard-exporter/internal/adguard"
-	"github.com/henrywhitaker3/adguard-exporter/internal/config"
-	"github.com/henrywhitaker3/adguard-exporter/internal/http"
-	"github.com/henrywhitaker3/adguard-exporter/internal/metrics"
-	"github.com/henrywhitaker3/adguard-exporter/internal/worker"
+	"github.com/belphemur/adguard-exporter/internal/adguard"
+	"github.com/belphemur/adguard-exporter/internal/config"
+	"github.com/belphemur/adguard-exporter/internal/http"
+	"github.com/belphemur/adguard-exporter/internal/metrics"
+	"github.com/belphemur/adguard-exporter/internal/worker"
+)
+
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
 )
 
 func main() {
@@ -33,6 +40,7 @@ func main() {
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
 	http := http.NewHttp(global.Server.Debug)
+	log.Infof("Running server version %s (%s), built at %s", version, commit, date)
 	go http.Serve()
 	go worker.Work(ctx, global.Server.Interval, clients)
 
