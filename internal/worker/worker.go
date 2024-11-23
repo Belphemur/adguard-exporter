@@ -138,8 +138,12 @@ func collectQueryLogStats(ctx context.Context, client *adguard.Client) {
 		if err != nil {
 			continue
 		}
-		metrics.TotalQueriesDetails.WithLabelValues(client.Url(), l.Client, l.Reason, l.Status, l.Upstream, l.ClientInfo.Name).Set(elapsed)
-		metrics.TotalQueriesDetailsHistogram.WithLabelValues(client.Url(), l.Client, l.Reason, l.Status, l.Upstream, l.ClientInfo.Name).Observe(float64(elapsed))
+		clientName := l.ClientInfo.Name
+		if clientName == "" {
+			clientName = l.Client
+		}
+		metrics.TotalQueriesDetails.WithLabelValues(client.Url(), l.Client, l.Reason, l.Status, l.Upstream, clientName).Set(elapsed)
+		metrics.TotalQueriesDetailsHistogram.WithLabelValues(client.Url(), l.Client, l.Reason, l.Status, l.Upstream, clientName).Observe(float64(elapsed))
 	}
 
 	for _, t := range times {
