@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/labstack/gommon/log"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -40,7 +40,7 @@ func main() {
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
 	http := http.NewHttp(global.Server.Debug)
-	log.Infof("Running server version %s (%s), built at %s", version, commit, date)
+	log.Printf("Running server version %s (%s), built at %s\n", version, commit, date)
 	go http.Serve()
 	go worker.Work(ctx, global.Server.Interval, clients)
 
