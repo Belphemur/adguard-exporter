@@ -47,11 +47,10 @@ archives:
 checksum:
   name_template: 'checksums.txt'
 dockers:
-  - image_templates:
-      - "ghcr.io/belphemur/adguard-exporter:latest"
-      - "ghcr.io/belphemur/adguard-exporter:{{ .Version }}"
-    dockerfile: Dockerfile
+  - goos: linux
+    goarch: amd64
     build_flag_templates:
+      - "--platform=linux/amd64"
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.name={{.ProjectName}}"
@@ -59,6 +58,69 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
       - "--label=org.opencontainers.image.source={{.GitURL}}"
       - "--label=org.opencontainers.image.description=Prometheus exporter for AdGuard Home"
+    dockerfile: Dockerfile
+    image_templates:
+      - ghcr.io/belphemur/adguard-exporter:{{ .Tag }}-amd64
+      - ghcr.io/belphemur/adguard-exporter:latest-amd64
+
+  - goos: linux
+    goarch: arm64
+    build_flag_templates:
+      - "--platform=linux/arm64/v8"
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--label=org.opencontainers.image.description=Prometheus exporter for AdGuard Home"
+    dockerfile: Dockerfile
+    image_templates:
+      - ghcr.io/belphemur/adguard-exporter:{{ .Tag }}-arm64v8
+      - ghcr.io/belphemur/adguard-exporter:latest-arm64v8
+  - goos: linux
+    goarch: arm
+    build_flag_templates:
+      - "--platform=linux/arm/v6"
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--label=org.opencontainers.image.description=Prometheus exporter for AdGuard Home"
+    dockerfile: Dockerfile
+    image_templates:
+      - ghcr.io/belphemur/adguard-exporter:{{ .Tag }}-armv6
+      - ghcr.io/belphemur/adguard-exporter:latest-armv6
+  - goos: linux
+    goarch: arm
+    build_flag_templates:
+      - "--platform=linux/arm/v7"
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--label=org.opencontainers.image.description=Prometheus exporter for AdGuard Home"
+    dockerfile: Dockerfile
+    image_templates:
+      - ghcr.io/belphemur/adguard-exporter:{{ .Tag }}-armv7
+      - ghcr.io/belphemur/adguard-exporter:latest-armv7
+docker_manifests:
+  - name_template: ghcr.io/belphemur/adguard-exporter:{{ .Tag }}
+    image_templates:
+      - ghcr.io/belphemur/adguard-exporter:{{ .Tag }}-amd64
+      - ghcr.io/belphemur/adguard-exporter:{{ .Tag }}-arm64v8
+      - ghcr.io/belphemur/adguard-exporter:{{ .Tag }}-armv7
+      - ghcr.io/belphemur/adguard-exporter:{{ .Tag }}-armv6
+  - name_template: ghcr.io/belphemur/adguard-exporter:latest
+    image_templates:
+      - ghcr.io/belphemur/adguard-exporter:latest-amd64
+      - ghcr.io/belphemur/adguard-exporter:latest-arm64v8
+      - ghcr.io/belphemur/adguard-exporter:latest-armv7
+      - ghcr.io/belphemur/adguard-exporter:latest-armv6
 # signs the checksum file
 # all files (including the sboms) are included in the checksum, so we don't need to sign each one if we don't want to
 # https://goreleaser.com/customization/sign
