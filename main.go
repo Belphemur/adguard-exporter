@@ -22,7 +22,7 @@ var (
 
 func main() {
 	metrics.Init()
-	global, err := config.FromEnv()
+	global, err := config.FromEnv(version)
 	if err != nil {
 		panic(err)
 	}
@@ -39,7 +39,11 @@ func main() {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	http := http.NewHttp(global.Server.Debug, global.Server.Port)
+	check, err := http.NewHealthCheck(global)
+	if err != nil {
+		panic(err)
+	}
+	http := http.NewHttp(global.Server.Debug, global.Server.Port, check)
 	log.Printf("Running server version %s (%s), built at %s\n", version, commit, date)
 	go http.Serve()
 	go worker.Work(ctx, global.Server.Interval, clients)

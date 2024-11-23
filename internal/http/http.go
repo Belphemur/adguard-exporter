@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"github.com/hellofresh/health-go/v5"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -16,7 +17,7 @@ type Http struct {
 	port uint16
 }
 
-func NewHttp(debug bool, port uint16) *Http {
+func NewHttp(debug bool, port uint16, health *health.Health) *Http {
 	e := echo.New()
 	e.HideBanner = true
 
@@ -24,6 +25,7 @@ func NewHttp(debug bool, port uint16) *Http {
 	if debug {
 		e.GET("/debug/*", echo.WrapHandler(http.DefaultServeMux))
 	}
+	e.GET("/health", echo.WrapHandler(health.Handler()))
 
 	return &Http{
 		e,

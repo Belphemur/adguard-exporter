@@ -12,6 +12,7 @@ import (
 type Global struct {
 	Server  Server
 	Configs []Config
+	Version string
 }
 
 type Server struct {
@@ -32,7 +33,7 @@ type EnvConfig struct {
 	Passwords []string `env:"ADGUARD_PASSWORDS"`
 }
 
-func FromEnv() (*Global, error) {
+func FromEnv(version string) (*Global, error) {
 	godotenv.Load()
 
 	env := &EnvConfig{}
@@ -60,6 +61,7 @@ func FromEnv() (*Global, error) {
 	return &Global{
 		Server:  *serv,
 		Configs: configs,
+		Version: version,
 	}, nil
 }
 
