@@ -158,14 +158,13 @@ func (c *Client) getQueryTimes(l *queryLog) ([]QueryTime, error) {
 		}
 
 		out = append(out, QueryTime{
-			ElapsedSeconds: time.Duration(ms) * time.Millisecond / time.Second,
+			ElapsedSeconds: time.Duration(ms) * time.Millisecond,
 			Client:         q.Client,
 			Upstream:       q.Upstream,
 		})
 	}
 	return out, nil
 }
-
 func (c *Client) Url() string {
 	return c.conf.Url
 }

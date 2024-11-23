@@ -80,7 +80,7 @@ var (
 		Name:      "top_clients",
 		Namespace: "adguard",
 		Help:      "The number of queries for the top clients",
-	}, []string{"server", "client"})
+	}, []string{"server", "client", "client_name"})
 	TopUpstreams = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name:      "top_upstreams",
 		Namespace: "adguard",
