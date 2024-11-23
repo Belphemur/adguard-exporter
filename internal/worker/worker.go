@@ -53,6 +53,13 @@ func collectStats(ctx context.Context, client *adguard.Client) {
 		metrics.ScrapeErrors.WithLabelValues(client.Url()).Inc()
 		return
 	}
+
+	clients, err := client.GetClients(ctx)
+	if err != nil {
+		log.Printf("ERROR - could not get clients: %v\n", err)
+		metrics.ScrapeErrors.WithLabelValues(client.Url()).Inc()
+		return
+	}
 	metrics.TotalQueries.WithLabelValues(client.Url()).Set(float64(stats.TotalQueries))
 	metrics.BlockedFiltered.WithLabelValues(client.Url()).Set(float64(stats.BlockedFilteredQueries))
 	metrics.ReplacedSafesearch.WithLabelValues(client.Url()).Set(float64(stats.ReplacedSafesearchQueries))
@@ -60,9 +67,17 @@ func collectStats(ctx context.Context, client *adguard.Client) {
 	metrics.ReplacedParental.WithLabelValues(client.Url()).Set(float64(stats.ReplacedParentalQueries))
 	metrics.AvgProcessingTime.WithLabelValues(client.Url()).Set(float64(stats.AvgProcessingTime))
 
+	autoClients := make(map[string]string)
+	for _, client := range *clients.AutoClients {
+		autoClients[*client.Ip] = *client.Name
+	}
 	for _, c := range stats.TopClients {
 		for key, val := range c {
-			metrics.TopClients.WithLabelValues(client.Url(), key).Set(float64(val))
+			clientName, found := autoClients[key]
+			if !found || clientName == "" {
+				clientName = key
+			}
+			metrics.TopClients.WithLabelValues(client.Url(), key, clientName).Set(float64(val))
 		}
 	}
 	for _, c := range stats.TopUpstreamsResponses {

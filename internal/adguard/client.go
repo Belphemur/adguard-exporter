@@ -70,7 +70,7 @@ func (c *Client) GetStats(ctx context.Context) (*Stats, error) {
 
 func (c *Client) GetClients(ctx context.Context) (*generated.Clients, error) {
 	out := &generated.Clients{}
-	err := c.do(ctx, http.MethodGet, "/clients", out)
+	err := c.do(ctx, http.MethodGet, "/control/clients", out)
 	return out, err
 }
 
