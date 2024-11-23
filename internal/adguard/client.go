@@ -160,6 +160,7 @@ func (c *Client) getQueryTimes(l *queryLog) ([]QueryTime, error) {
 		out = append(out, QueryTime{
 			ElapsedSeconds: time.Duration(ms) * time.Millisecond,
 			Client:         q.Client,
+			ClientName:     q.ClientInfo.Name,
 			Upstream:       q.Upstream,
 		})
 	}

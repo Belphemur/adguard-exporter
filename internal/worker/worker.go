@@ -37,31 +37,32 @@ func collect(ctx context.Context, client *adguard.Client) error {
 		initialised = append(initialised, client.Url())
 	}
 
-	clients, err := client.GetClients(ctx)
-	if err != nil {
-		log.Printf("ERROR - could not get clients: %v\n", err)
-		metrics.ScrapeErrors.WithLabelValues(client.Url()).Inc()
-		return err
-	}
-	autoClients := make(map[string]string)
-	for _, client := range *clients.AutoClients {
-		autoClients[*client.Ip] = *client.Name
-	}
-
-	go collectStats(ctx, client, autoClients)
+	go collectStats(ctx, client)
 	go collectStatus(ctx, client)
 	go collectDhcp(ctx, client)
-	go collectQueryLogStats(ctx, client, autoClients)
+	go collectQueryLogStats(ctx, client)
 
 	return nil
 }
 
-func collectStats(ctx context.Context, client *adguard.Client, autoClients map[string]string) {
+func collectStats(ctx context.Context, client *adguard.Client) {
 	stats, err := client.GetStats(ctx)
 	if err != nil {
 		log.Printf("ERROR - could not get stats: %v\n", err)
 		metrics.ScrapeErrors.WithLabelValues(client.Url()).Inc()
 		return
+	}
+
+	clients, err := client.GetClients(ctx)
+	if err != nil {
+		log.Printf("ERROR - could not get clients: %v\n", err)
+		metrics.ScrapeErrors.WithLabelValues(client.Url()).Inc()
+		return
+	}
+
+	autoClients := make(map[string]string)
+	for _, client := range *clients.AutoClients {
+		autoClients[*client.Ip] = *client.Name
 	}
 
 	metrics.TotalQueries.WithLabelValues(client.Url()).Set(float64(stats.TotalQueries))
@@ -134,7 +135,7 @@ func collectDhcp(ctx context.Context, client *adguard.Client) {
 	metrics.DhcpLeases.Record(client.Url(), dhcp.Leases)
 }
 
-func collectQueryLogStats(ctx context.Context, client *adguard.Client, autoClients map[string]string) {
+func collectQueryLogStats(ctx context.Context, client *adguard.Client) {
 	stats, times, _, err := client.GetQueryLog(ctx)
 	if err != nil {
 		log.Printf("ERROR - could not get query type stats: %v\n", err)
@@ -149,8 +150,8 @@ func collectQueryLogStats(ctx context.Context, client *adguard.Client, autoClien
 	}
 
 	for _, t := range times {
-		clientName, found := autoClients[t.Client]
-		if !found || clientName == "" {
+		clientName := t.ClientName
+		if clientName == "" {
 			clientName = t.Client
 		}
 		metrics.ProcessingTimeBucket.
