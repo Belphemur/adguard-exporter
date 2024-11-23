@@ -65,7 +65,7 @@ var (
 		Buckets:                        []float64{0.01, 0.02, 0.03, 0.05, 0.08, 0.1, 0.2, 0.3, 0.5, 1},
 		NativeHistogramMaxBucketNumber: 256,
 		NativeHistogramBucketFactor:    1.1,
-	}, []string{"server", "client", "upstream"})
+	}, []string{"server", "client", "client_name", "upstream"})
 	TopQueriedDomains = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name:      "top_queried_domains",
 		Namespace: "adguard",

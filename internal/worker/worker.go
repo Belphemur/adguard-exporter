@@ -37,15 +37,26 @@ func collect(ctx context.Context, client *adguard.Client) error {
 		initialised = append(initialised, client.Url())
 	}
 
-	go collectStats(ctx, client)
+	clients, err := client.GetClients(ctx)
+	if err != nil {
+		log.Printf("ERROR - could not get clients: %v\n", err)
+		metrics.ScrapeErrors.WithLabelValues(client.Url()).Inc()
+		return err
+	}
+	autoClients := make(map[string]string)
+	for _, client := range *clients.AutoClients {
+		autoClients[*client.Ip] = *client.Name
+	}
+
+	go collectStats(ctx, client, autoClients)
 	go collectStatus(ctx, client)
 	go collectDhcp(ctx, client)
-	go collectQueryLogStats(ctx, client)
+	go collectQueryLogStats(ctx, client, autoClients)
 
 	return nil
 }
 
-func collectStats(ctx context.Context, client *adguard.Client) {
+func collectStats(ctx context.Context, client *adguard.Client, autoClients map[string]string) {
 	stats, err := client.GetStats(ctx)
 	if err != nil {
 		log.Printf("ERROR - could not get stats: %v\n", err)
@@ -53,12 +64,6 @@ func collectStats(ctx context.Context, client *adguard.Client) {
 		return
 	}
 
-	clients, err := client.GetClients(ctx)
-	if err != nil {
-		log.Printf("ERROR - could not get clients: %v\n", err)
-		metrics.ScrapeErrors.WithLabelValues(client.Url()).Inc()
-		return
-	}
 	metrics.TotalQueries.WithLabelValues(client.Url()).Set(float64(stats.TotalQueries))
 	metrics.BlockedFiltered.WithLabelValues(client.Url()).Set(float64(stats.BlockedFilteredQueries))
 	metrics.ReplacedSafesearch.WithLabelValues(client.Url()).Set(float64(stats.ReplacedSafesearchQueries))
@@ -66,10 +71,6 @@ func collectStats(ctx context.Context, client *adguard.Client) {
 	metrics.ReplacedParental.WithLabelValues(client.Url()).Set(float64(stats.ReplacedParentalQueries))
 	metrics.AvgProcessingTime.WithLabelValues(client.Url()).Set(float64(stats.AvgProcessingTime))
 
-	autoClients := make(map[string]string)
-	for _, client := range *clients.AutoClients {
-		autoClients[*client.Ip] = *client.Name
-	}
 	for _, c := range stats.TopClients {
 		for key, val := range c {
 			clientName, found := autoClients[key]
@@ -133,7 +134,7 @@ func collectDhcp(ctx context.Context, client *adguard.Client) {
 	metrics.DhcpLeases.Record(client.Url(), dhcp.Leases)
 }
 
-func collectQueryLogStats(ctx context.Context, client *adguard.Client) {
+func collectQueryLogStats(ctx context.Context, client *adguard.Client, autoClients map[string]string) {
 	stats, times, _, err := client.GetQueryLog(ctx)
 	if err != nil {
 		log.Printf("ERROR - could not get query type stats: %v\n", err)
@@ -148,8 +149,12 @@ func collectQueryLogStats(ctx context.Context, client *adguard.Client) {
 	}
 
 	for _, t := range times {
+		clientName, found := autoClients[t.Client]
+		if !found || clientName == "" {
+			clientName = t.Client
+		}
 		metrics.ProcessingTimeBucket.
-			WithLabelValues(client.Url(), t.Client, t.Upstream).
+			WithLabelValues(client.Url(), t.Client, clientName, t.Upstream).
 			Observe(float64(t.ElapsedSeconds.Seconds()))
 	}
 }
