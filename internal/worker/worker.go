@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/henrywhitaker3/adguard-exporter/internal/adguard"
-	"github.com/henrywhitaker3/adguard-exporter/internal/metrics"
+	"github.com/belphemur/adguard-exporter/internal/adguard"
+	"github.com/belphemur/adguard-exporter/internal/metrics"
 )
 
 var (

@@ -15,7 +15,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
-	"github.com/henrywhitaker3/adguard-exporter/internal/config"
+	"github.com/belphemur/adguard-exporter/internal/config"
 )
 
 type Client struct {

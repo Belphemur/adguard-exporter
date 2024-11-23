@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/henrywhitaker3/adguard-exporter/internal/adguard"
+	"github.com/belphemur/adguard-exporter/internal/adguard"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
