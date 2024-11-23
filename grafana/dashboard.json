@@ -444,7 +444,7 @@
                             }
                         ]
                     },
-                    "unit": "ms"
+                    "unit": "s"
                 },
                 "overrides": []
             },
@@ -481,7 +481,7 @@
                     },
                     "editorMode": "code",
                     "exemplar": false,
-                    "expr": "sum(rate(adguard_processing_time_milliseconds_sum{server=\"$server\"}[$__rate_interval])) / sum(rate(adguard_processing_time_milliseconds_count{server=\"$server\"}[$__rate_interval]))",
+                    "expr": "sum(rate(adguard_processing_time_seconds_sum{server=\"$server\"}[$__rate_interval])) / sum(rate(adguard_processing_time_seconds_count{server=\"$server\"}[$__rate_interval]))",
                     "instant": true,
                     "interval": "",
                     "legendFormat": "",
@@ -1190,12 +1190,12 @@
                     {
                         "matcher": {
                             "id": "byName",
-                            "options": "Avg Latency"
+                            "options": "Latency"
                         },
                         "properties": [
                             {
                                 "id": "unit",
-                                "value": "ms"
+                                "value": "s"
                             }
                         ]
                     },
@@ -1758,6 +1758,6 @@
     "timezone": "",
     "title": "AdGuard Home Exporter",
     "uid": "fe4rz1skcos1sc",
-    "version": 2,
+    "version": 4,
     "weekStart": ""
 }
