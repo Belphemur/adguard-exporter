@@ -17,7 +17,7 @@ $ docker run \
   -e 'ADGUARD_PASSWORDS=mypassword' \
   -e 'INTERVAL=15s' \ # Optional, defaults to 30s
   -p 9618:9618 \
-  ghcr.io/henrywhitaker3/adguard-exporter:latest
+  ghcr.io/belphemur/adguard-exporter:latest
 ```
 
 A single instance of adguard-exporter can monitor multiple AdGuard Home instances.
@@ -29,7 +29,7 @@ $ docker run \
   -e "ADGUARD_USERNAMES=$USERNAME1,$USERNAME2,$USERNAME3" \
   -e "ADGUARD_PASSWORDS=$PASSWORD1,$PASSWORD2,$PASSWORD3" \
   -p 9618:9618 \
-  ghcr.io/henrywhitaker3/adguard-exporter:latest
+  ghcr.io/belphemur/adguard-exporter:latest
 ```
 
 ### Env Vars
