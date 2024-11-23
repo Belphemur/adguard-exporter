@@ -62,7 +62,7 @@ var (
 		Name:                           "processing_time_seconds",
 		Namespace:                      "adguard",
 		Help:                           "The processing time of queries",
-		Buckets:                        []float64{0.01, 0.015, 0.18, 0.02, 0.22, 0.24, 0.26, 0.28, 0.03, 0.06, 0.09, 0.1},
+		Buckets:                        []float64{0.01, 0.02, 0.03, 0.05, 0.08, 0.1, 0.2, 0.3, 0.5, 1},
 		NativeHistogramMaxBucketNumber: 256,
 		NativeHistogramBucketFactor:    1.1,
 	}, []string{"server", "client", "upstream"})
