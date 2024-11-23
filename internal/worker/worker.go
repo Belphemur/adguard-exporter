@@ -3,7 +3,7 @@ package worker
 import (
 	"context"
 	"log"
-	"slices"
+	"sync"
 	"time"
 
 	"github.com/belphemur/adguard-exporter/internal/adguard"
@@ -11,13 +11,16 @@ import (
 )
 
 var (
-	initialised = []string{}
-	versions    = map[string]string{}
+	initialised map[string]bool
+	versions    map[string]string
+	mu          sync.Mutex
 )
 
 func Work(ctx context.Context, interval time.Duration, clients []*adguard.Client) {
 	log.Printf("Collecting metrics every %s\n", interval)
 	tick := time.NewTicker(interval)
+	initialised = make(map[string]bool, len(clients))
+	versions = make(map[string]string, len(clients))
 	for {
 		select {
 		case <-ctx.Done():
@@ -32,10 +35,12 @@ func Work(ctx context.Context, interval time.Duration, clients []*adguard.Client
 
 func collect(ctx context.Context, client *adguard.Client) error {
 	// Initialise the scrape errors counter with a 0
-	if !slices.Contains(initialised, client.Url()) {
+	mu.Lock()
+	if _, clientInitialised := initialised[client.Url()]; !clientInitialised {
 		metrics.ScrapeErrors.WithLabelValues(client.Url())
-		initialised = append(initialised, client.Url())
+		initialised[client.Url()] = true
 	}
+	mu.Unlock()
 
 	go collectStats(ctx, client)
 	go collectStatus(ctx, client)
@@ -111,6 +116,7 @@ func collectStatus(ctx context.Context, client *adguard.Client) {
 		return
 	}
 	// Persist the running version the first time
+	mu.Lock()
 	if _, ok := versions[client.Url()]; !ok {
 		versions[client.Url()] = status.Version
 	}
@@ -119,6 +125,7 @@ func collectStatus(ctx context.Context, client *adguard.Client) {
 	if versions[client.Url()] != status.Version {
 		metrics.Running.Reset()
 	}
+	mu.Unlock()
 
 	metrics.Running.WithLabelValues(client.Url(), status.Version).Set(float64(status.Running.Int()))
 	metrics.ProtectionEnabled.WithLabelValues(client.Url()).Set(float64(status.ProtectionEnabled.Int()))
