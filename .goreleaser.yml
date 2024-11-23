@@ -1,3 +1,4 @@
+version: 2
 project_name: adguard-exporter
 release:
   github:
@@ -57,6 +58,7 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
       - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--label=org.opencontainers.image.description=Prometheus exporter for AdGuard Home"
 # signs the checksum file
 # all files (including the sboms) are included in the checksum, so we don't need to sign each one if we don't want to
 # https://goreleaser.com/customization/sign
