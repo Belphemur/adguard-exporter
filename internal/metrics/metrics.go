@@ -96,17 +96,6 @@ var (
 		Namespace: "adguard",
 		Help:      "The number of queries for a specific type",
 	}, []string{"server", "type", "client"})
-	TotalQueriesDetails = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name:      "queries_details",
-		Namespace: "adguard",
-		Help:      "Total queries by user",
-	}, []string{"server", "user", "reason", "status", "upstream", "client_name"})
-	TotalQueriesDetailsHistogram = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name:      "queries_details_histogram",
-		Namespace: "adguard",
-		Help:      "Total queries by user",
-		Buckets:   prometheus.LinearBuckets(0, 10, 10),
-	}, []string{"server", "user", "reason", "status", "upstream", "client_name"})
 
 	// DHCP
 	DhcpEnabled = prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -182,8 +171,6 @@ func Init() {
 	prometheus.MustRegister(TopUpstreamsAvgTimes)
 	prometheus.MustRegister(QueryTypes)
 	prometheus.MustRegister(ProcessingTimeBucket)
-	prometheus.MustRegister(TotalQueriesDetails)
-	prometheus.MustRegister(TotalQueriesDetailsHistogram)
 
 	// Status
 	prometheus.MustRegister(Running)

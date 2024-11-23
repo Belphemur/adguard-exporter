@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"slices"
-	"strconv"
 	"time"
 
 	"github.com/belphemur/adguard-exporter/internal/adguard"
@@ -135,7 +134,7 @@ func collectDhcp(ctx context.Context, client *adguard.Client) {
 }
 
 func collectQueryLogStats(ctx context.Context, client *adguard.Client) {
-	stats, times, queries, err := client.GetQueryLog(ctx)
+	stats, times, _, err := client.GetQueryLog(ctx)
 	if err != nil {
 		log.Printf("ERROR - could not get query type stats: %v\n", err)
 		metrics.ScrapeErrors.WithLabelValues(client.Url()).Inc()
@@ -146,19 +145,6 @@ func collectQueryLogStats(ctx context.Context, client *adguard.Client) {
 		for t, v := range v {
 			metrics.QueryTypes.WithLabelValues(client.Url(), t, c).Set(float64(v))
 		}
-	}
-
-	for _, l := range queries {
-		elapsed, err := strconv.ParseFloat(l.Elapsed, 64)
-		if err != nil {
-			continue
-		}
-		clientName := l.ClientInfo.Name
-		if clientName == "" {
-			clientName = l.Client
-		}
-		metrics.TotalQueriesDetails.WithLabelValues(client.Url(), l.Client, l.Reason, l.Status, l.Upstream, clientName).Set(elapsed)
-		metrics.TotalQueriesDetailsHistogram.WithLabelValues(client.Url(), l.Client, l.Reason, l.Status, l.Upstream, clientName).Observe(float64(elapsed))
 	}
 
 	for _, t := range times {
