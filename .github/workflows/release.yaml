@@ -48,7 +48,7 @@ jobs:
         run: |
           echo digest=$(docker buildx imagetools inspect ghcr.io/belphemur/adguard-exporter:latest --format "{{json .Manifest.Digest}}"  | xargs) >> $GITHUB_OUTPUT
       - name: Attest
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v2
         id: attest
         with:
           subject-name: ghcr.io/belphemur/adguard-exporter
