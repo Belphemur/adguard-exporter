@@ -7,7 +7,7 @@ COPY . /build
 RUN go mod download
 RUN CGO_ENABLED=0 go build -a -o adguard-exporter main.go
 
-FROM alpine:3.20.3
+FROM alpine:3.21.0
 
 RUN apk add ca-certificates curl --no-cache
 ARG SREP_VERSION
