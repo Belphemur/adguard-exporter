@@ -30,7 +30,7 @@ jobs:
       - uses: sigstore/cosign-installer@v3.10.1         # installs cosign
       - uses: anchore/sbom-action/download-syft@v0.24.2 # installs syft
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - uses: docker/login-action@v4                   # login to ghcr
         with:
           registry: ghcr.io
