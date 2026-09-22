@@ -6,7 +6,7 @@ require (
 	github.com/hellofresh/health-go/v5 v5.5.5
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-contrib v0.50.1
-	github.com/labstack/echo/v4 v4.15.0
+	github.com/labstack/echo/v5 v5.3.1
 	github.com/labstack/echo/v5 v5.3.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/prometheus/client_golang v1.24.1
