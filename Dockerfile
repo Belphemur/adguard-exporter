@@ -1,4 +1,4 @@
-FROM alpine:3.24.3
+FROM alpine:3.24.4
 ENV PORT 9618
 
 RUN apk add ca-certificates curl --no-cache
